@@ -1,10 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Inscription sur Snowtricks</h1>
+    <container class="registrationDiv">
+        <div>
+            <h1>Registration</h1>
+        </div>
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button type="submit" class="btn btn-success">Inscription !</button>
-    {{ form_end(form) }}
+        <div>
+            {{ form_start(form) }}
+
+            {{ form_row(form.username, { 'attr' : {'placeholder' : 'your mail'}}) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.password) }}
+
+            <button type="submit" class="btn btn-success registrationButton">Create an account</button>
+            {{ form_end(form) }}
+        </div>
+    </container>
  {% endblock %}
