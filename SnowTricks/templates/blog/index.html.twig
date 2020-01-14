@@ -7,6 +7,24 @@
 
 </section>
 <section class="articles">
+
+    {% for trick in tricks %}
+    <article>   
+        <h2>{{ trick.title }}</h2>
+        <div>
+            <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} ">
+        </div>
+        <div class="metadata">Created the {{ trick.createdAt | date('d/m/Y') }} à {{ trick.createdAt | date('H:i') }} </div>
+        <div> Trick type : {{ trick.trickType }}</div>
+        <div class="content">
+            {{ trick.content | raw }}
+        </div>
+        <div>
+             <a href="{{ path('blog_show', {'id' : trick.id }) }}" class="btn btn-primary"> Read more...</a>
+        </div>
+    </article>
+
+    {% endfor %}
 </section>
 
 {% endblock %}

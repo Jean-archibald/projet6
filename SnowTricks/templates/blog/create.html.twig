@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+    <h1>Create Trick</h1>
+
+    {{ form_start(formTrick) }}
+   
+
+    {{ form_row(formTrick.title, {
+        'attr': {'placeholder' : 'Trick title'}
+    }) }}
+
+    {{ form_row(formTrick.content, {
+        'attr': {'placeholder' : 'Trick content'}
+    }) }}
+
+    {{ form_row(formTrick.type, {
+        'attr': {'placeholder' : 'Trick type'}
+    }) }}
+
+     {{ form_row(formTrick.featuredPhoto, {
+        'attr': {'placeholder' : 'Featured photo'}
+    }) }}
+
+
+   
+
+    <button type="submit" class="btn btn-success">Save Trick</button>
+
+    {{ form_end(formTrick) }}
+ 
+{% endblock %}

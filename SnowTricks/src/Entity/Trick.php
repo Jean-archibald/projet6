@@ -5,12 +5,24 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TrickRepository")
  */
 class Trick
 {
+
+    const TYPE = [
+        0 => 'Grabs',
+        1 => 'Rotations',
+        2 => 'Flips',
+        3 => 'Rotations désaxées',
+        4 => 'Slides',
+        5 => 'One Foot tricks',
+        6 => 'Old school'
+    ];
+    
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -20,11 +32,13 @@ class Trick
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(min=5, max=30, minMessage="Title too short", maxMessage="Title too long")
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Length(min=10, minMessage="Description too short")
      */
     private $content;
 
@@ -57,6 +71,18 @@ class Trick
      * @ORM\OneToMany(targetEntity="App\Entity\Photo", mappedBy="trick", orphanRemoval=true)
      */
     private $photos;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tricks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $featuredPhoto;
+
 
     public function __construct()
     {
@@ -98,6 +124,12 @@ class Trick
     {
         return $this->type;
     }
+
+    public function getTrickType(): ?string
+    {
+        return self::TYPE[$this->type];
+    }
+
 
     public function setType(string $type): self
     {
@@ -222,4 +254,29 @@ class Trick
 
         return $this;
     }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getFeaturedPhoto(): ?string
+    {
+        return $this->featuredPhoto;
+    }
+
+    public function setFeaturedPhoto(string $featuredPhoto): self
+    {
+        $this->featuredPhoto = $featuredPhoto;
+
+        return $this;
+    }
+
 }

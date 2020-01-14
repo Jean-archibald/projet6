@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+    <article>
+        <h2>{{ trick.title }}</h2>
+        <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} ">
+        <div class="metadata">Create the {{ trick.createdAt | date('d/m/Y')}}</div>
+        <div> Trick type : {{ trick.trickType }}</div>
+        <div class="content">
+            {{ trick.content | raw }}
+
+    </article>
+
+{% endblock %}

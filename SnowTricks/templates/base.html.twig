@@ -20,8 +20,13 @@
                         <a class="nav-link" href="{{ path('home') }}">Home </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('blog') }}">Tricks</a>
+                        <a class="nav-link" href="{{ path('blog') }}">Trick's List</a>
                     </li>
+                    {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('blog_create') }}">Create Trick</a>
+                    </li>
+                    {% endif %}
                     {% if not app.user %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('security_login') }}">Sign in</a>
