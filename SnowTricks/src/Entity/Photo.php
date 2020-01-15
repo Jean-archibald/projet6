@@ -89,4 +89,5 @@ class Photo
 
         return $this;
     }
+
 }

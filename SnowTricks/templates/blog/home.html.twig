@@ -1,4 +1,9 @@
 {% extends 'base.html.twig' %} 
 {% block body %}
-<h1>Bienvenue sur SnowTricks</h1>
+<container class="containerHome">
+    <img src="{{ asset('uploads/homeImage.jpg' ) }} " alt="snowboard" class="mainPhoto"/>
+    <div class="textPhoto">
+        <h1>Welcome to SnowTricks</h1>
+    </div>
+</container>
 {% endblock %}

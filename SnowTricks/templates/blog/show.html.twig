@@ -2,15 +2,77 @@
 
 
 {% block body %}
+    <div class="divUniqueTrick">
 
-    <article>
-        <h2>{{ trick.title }}</h2>
-        <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} ">
-        <div class="metadata">Create the {{ trick.createdAt | date('d/m/Y')}}</div>
-        <div> Trick type : {{ trick.trickType }}</div>
-        <div class="content">
-            {{ trick.content | raw }}
+        <article class="articleTrick">
+            <div class="titleDivUniqueTrick">
+                <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} " class="featuredPhoto">
+                <div class="textFeaturedPhoto">
+                    <h2>{{ trick.title }}</h2>
+                </div>
+            </div>
+            <div class="contentTrick">
+                {{ trick.content | raw }}
+            </div>
+            <div class="propertiesTrickPost">
+                <div class="detailPost">Posted by {{ trick.author }}</div>
+                <div class="metadata detailPost">Created the {{ trick.createdAt | date('d/m/Y')}}</div>
+                {% if trick.modifiedAt is same as (null) %}
+                    
+                {% else %}
+                    <div class="metadata detailPost">Modified the {{ trick.modifiedAt | date('d/m/Y')}}</div>
+                {% endif %}
+                <div> 
+                    <div class="metadata detailPost">Trick type : {{ trick.trickType }}</div>
+                </div>
+            <div>
+        </article>
 
-    </article>
+        <div>
+            <hr class="separator">
+        </div>
+        <div class="commentFormDiv">
+         {% if app.user %}
+             <h2>Comment Form</h2>
+            {{ form_start(commentForm) }}
+            {{ form_row (commentForm.content, {'label' : 'Leave a comment','attr' : {'label':'Write a comment ','placeholder' : 'Your commentary'}})}}
+
+            <button type="submit" class="btn btn-success">Comment !</button>
+            {{ form_end(commentForm) }}
+
+            {% else %}
+                <h2>You must be connected to be able to comment !</h2>
+                <a href="{{path('security_login')}}" class="btn btn-primary">Connect</a>
+                <a href="{{path('security_registration')}}" class="btn btn-primary">Register</a>
+            {% endif %}
+
+        </div>
+        <div>
+            <hr class="separator">
+        </div>
+
+        <section id="comments">
+            <h2>{{ trick.comments | length }} Commentaires : </h2>
+            {% for comment in trick.comments %}
+                <div class="comment">
+                    <div class="row commentUnique">
+                        <div class="col-3">
+                            By {{ comment.author }}
+                        </div>
+                        <div class="col-3">      
+                            Posted the : {{ comment.createdAt | date('d/m/Y')}}
+                        </div>
+                        <div class="col-3"> 
+                            {{comment.content | raw}}
+                        </div>
+                    </div>
+            {% endfor %}
+            <button class="btn btn-info">Load More Comments </button>
+        </section>
+
+
+
+
+    </div>
 
 {% endblock %}

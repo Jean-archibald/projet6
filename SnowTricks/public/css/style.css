@@ -1,0 +1,119 @@
+h1
+{
+    color:red;
+}
+
+
+/* Home Page*/
+
+.mainPhoto
+{
+    width: 100%;
+}
+
+.containerHome 
+{
+   
+    position: relative;
+}
+.containerHome .textPhoto 
+{
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    position: absolute;
+    text-align: center;
+    font-family: Georgia;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 30%;
+    width: 70%;
+}
+
+/* Trick Unique Page*/
+.divUniqueTrick
+{
+
+    border: 2px solid black;
+    margin: 50px 150px 50px 150px;
+
+}
+
+.articleTrick
+{
+    text-align: center;
+    margin :0 auto;
+    width:80%;
+}
+
+.titleDivUniqueTrick
+{
+    position: relative;
+}
+
+.titleDivUniqueTrick .textFeaturedPhoto
+{
+    background: whitesmoke;
+    z-index: 1;
+    position: absolute;
+    text-align: center;
+    font-family: Georgia;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 15%;
+    width: 50%;
+}
+
+.featuredPhoto
+{
+    margin-top:20px;
+    width:65%;
+}
+
+.contentTrick
+{
+    margin-top:30px;
+    margin-bottom:30px;
+}
+
+.propertiesTrickPost
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 30px;
+}
+
+.detailPost
+{
+    border: 2px solid black;
+}
+
+.separator
+{
+    border: 1px solid black;
+    width:80%;
+}
+
+.commentFormDiv
+{
+    margin-right:50px;
+    margin-left:50px;
+    text-align: center;
+}
+
+#comments
+{
+    margin-right:50px;
+    margin-left:50px;
+    margin-bottom:20px;
+    text-align: center;
+}
+
+.commentUnique
+{
+    padding: 5px;
+    margin:5px;
+    border: 2px solid black;
+}

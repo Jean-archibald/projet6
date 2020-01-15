@@ -7,6 +7,7 @@
 
 </section>
 <section class="articles">
+    <h1 class="title">Trick's List</h1>    
 
     {% for trick in tricks %}
     <article>   
@@ -14,7 +15,12 @@
         <div>
             <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} ">
         </div>
-        <div class="metadata">Created the {{ trick.createdAt | date('d/m/Y') }} à {{ trick.createdAt | date('H:i') }} </div>
+        <div>Posted by {{ trick.author }}</div>
+        {% if trick.modifiedAt is same as (null) %}
+            <div class="metadata">Created the {{ trick.createdAt | date('d/m/Y')}}</div>
+        {% else %}
+             <div class="metadata">Modified the {{ trick.modifiedAt | date('d/m/Y')}}</div>
+        {% endif %}
         <div> Trick type : {{ trick.trickType }}</div>
         <div class="content">
             {{ trick.content | raw }}
