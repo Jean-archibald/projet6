@@ -3,6 +3,18 @@ h1
     color:red;
 }
 
+.titleAllPages
+{
+    background-color: blue;
+    text-align: center;
+    width: 100%;
+    padding-top:20px;
+    padding-bottom: 20px;
+
+}
+
+
+
 
 /* Home Page*/
 
@@ -53,7 +65,7 @@ h1
 
 .titleDivUniqueTrick .textFeaturedPhoto
 {
-    background: whitesmoke;
+    color:whitesmoke;
     z-index: 1;
     position: absolute;
     text-align: center;
@@ -63,6 +75,20 @@ h1
     right: 0;
     top: 15%;
     width: 50%;
+}
+
+.titleDivUniqueTrick .buttonModifyAndDelete
+{
+    background: whitesmoke;
+    z-index: 1;
+    position: absolute;
+    font-family: Georgia;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 5%;
+    width: 90px;
+    border: 2px solid black;
 }
 
 .featuredPhoto
@@ -116,4 +142,61 @@ h1
     padding: 5px;
     margin:5px;
     border: 2px solid black;
+}
+
+/* Trick List */
+.articleListDiv
+{
+    margin: 50px 50px 50px 50px;
+    height:auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: space-between;
+    flex-wrap:wrap;
+
+}
+.articleDiv
+{
+    width:200px;
+    height:250px;
+    border: 2px solid black;
+    margin-bottom: 15px;
+    margin-right:5px;
+    margin-left:5px;
+}
+
+.divPhoto
+{
+    width:200px;
+    height:200px;
+}
+
+.photoSize
+{
+    width:199px;
+    height:199px;
+}
+
+.infoTrick
+{
+    margin-top:5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.trickTitle
+{
+    margin-top:10px;
+}
+
+/* Login page*/
+.loginFormDiv
+{
+    width:70%;
+    margin:0 auto;
+    margin-top:50px;
+    text-align: center;
+    
 }

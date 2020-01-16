@@ -2,49 +2,52 @@
 
 
 {% block body %}
+<div class="titleAllPages">
+    <h1>Trick's List</h1>    
+</div>
 
+{% if editMode %}
+<h1>Modify Trick</h1>
+{% else %}
+<h1>Create Trick</h1>
+{% endif %}
+
+{{ form_start(formTrick) }}
+
+
+{{ form_row(formTrick.title, {
+    'attr': {'placeholder' : 'Trick title'}
+}) }}
+
+{{ form_row(formTrick.content, {
+    'attr': {'placeholder' : 'Trick content'}
+}) }}
+
+{{ form_row(formTrick.type, {
+    'attr': {'placeholder' : 'Trick type'}
+}) }}
+
+    {{ form_row(formTrick.featuredPhoto, {
+    'attr': {'placeholder' : 'Featured photo'}
+}) }}
+
+
+<div>
+    <button type="submit" class="btn btn-success">
     {% if editMode %}
-    <h1>Modify Trick</h1>
+    Save Modification
     {% else %}
-    <h1>Create Trick</h1>
+    Save Trick
+    {% endif %}
+    </button>
+</div>
+
+{{ form_end(formTrick) }}
+
+{% if editMode %}
+<div>
+    <a href="{{ path('blog_delete', {'id' : trick.id }) }}"><button class="btn btn-danger">Delete the trick</button></a>
+</div>
     {% endif %}
 
-    {{ form_start(formTrick) }}
-   
-
-    {{ form_row(formTrick.title, {
-        'attr': {'placeholder' : 'Trick title'}
-    }) }}
-
-    {{ form_row(formTrick.content, {
-        'attr': {'placeholder' : 'Trick content'}
-    }) }}
-
-    {{ form_row(formTrick.type, {
-        'attr': {'placeholder' : 'Trick type'}
-    }) }}
-
-     {{ form_row(formTrick.featuredPhoto, {
-        'attr': {'placeholder' : 'Featured photo'}
-    }) }}
-
-
-    <div>
-        <button type="submit" class="btn btn-success">
-        {% if editMode %}
-        Save Modification
-        {% else %}
-        Save Trick
-        {% endif %}
-        </button>
-    </div>
-
-    {{ form_end(formTrick) }}
-
-    {% if editMode %}
-    <div>
-        <a href="{{ path('blog_delete', {'id' : trick.id }) }}"><button class="btn btn-danger">Delete the trick</button></a>
-    </div>
-     {% endif %}
- 
 {% endblock %}

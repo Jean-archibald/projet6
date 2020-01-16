@@ -279,6 +279,13 @@ class Trick
         return $author;
     }
 
+    public function getUserId()
+    {
+        $author = $this->getUser()->getId();
+
+        return $author;
+    }
+
     public function getFeaturedPhoto(): ?string
     {
         return $this->featuredPhoto;

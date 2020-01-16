@@ -1,20 +1,19 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <container class="registrationDiv">
-        <div>
-            <h1>Registration</h1>
-        </div>
+<container class="registrationDiv">
+    <div class="titleAllPages">
+        <h1>Registration</h1>    
+    </div>
+<div class="loginFormDiv">
+    {{ form_start(form) }}
 
-        <div>
-            {{ form_start(form) }}
+    {{ form_row(form.username, { 'attr' : {'placeholder' : 'Choose a username'}}) }}
+    {{ form_row(form.email, { 'attr' : {'placeholder' : 'Enter your email'}}) }}
+    {{ form_row(form.password, { 'attr' : {'placeholder' : 'Choose a password'}}) }}
 
-            {{ form_row(form.username, { 'attr' : {'placeholder' : 'your mail'}}) }}
-            {{ form_row(form.email) }}
-            {{ form_row(form.password) }}
-
-            <button type="submit" class="btn btn-success registrationButton">Create an account</button>
-            {{ form_end(form) }}
-        </div>
-    </container>
+    <button type="submit" class="btn btn-success registrationButton">Create an account</button>
+    {{ form_end(form) }}
+</div>
+</container>
  {% endblock %}

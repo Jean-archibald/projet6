@@ -3,34 +3,28 @@
 {% block title %} Hello BlogController ! {% endblock %}
 
 {% block body %}
-<section class="homeImage">
-
-</section>
-<section class="articles">
-    <h1 class="title">Trick's List</h1>    
-
-    {% for trick in tricks %}
-    <article>   
-        <h2>{{ trick.title }}</h2>
-        <div>
-            <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} ">
+<div class="titleAllPages">
+    <h1>Trick's List</h1>    
+</div>
+<section>
+    <div class="articleListDiv">
+        {% for trick in tricks %}
+        <div class="articleDiv">   
+            <div class="divPhoto">
+                <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }}" class="photoSize">
+            </div>
+            <div class="infoTrick">
+                <div class="trickTitle">
+                    <a href="{{ path('blog_show', {'id' : trick.id }) }}"><p>{{ trick.title }}</p></a>
+                </div>
+                <div class="buttonModifyAndDelete trickListButton">
+                    <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                    <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-trash"></i></a>
+                </div>
+            </div>
         </div>
-        <div>Posted by {{ trick.author }}</div>
-        {% if trick.modifiedAt is same as (null) %}
-            <div class="metadata">Created the {{ trick.createdAt | date('d/m/Y')}}</div>
-        {% else %}
-             <div class="metadata">Modified the {{ trick.modifiedAt | date('d/m/Y')}}</div>
-        {% endif %}
-        <div> Trick type : {{ trick.trickType }}</div>
-        <div class="content">
-            {{ trick.content | raw }}
-        </div>
-        <div>
-             <a href="{{ path('blog_show', {'id' : trick.id }) }}" class="btn btn-primary"> Read more...</a>
-        </div>
-    </article>
-
-    {% endfor %}
+        {% endfor %}
+</div>
 </section>
 
 {% endblock %}

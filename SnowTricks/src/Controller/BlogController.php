@@ -38,7 +38,14 @@ class BlogController extends AbstractController
      */
     public function home()
     {
-        return $this->render('blog/home.html.twig');
+        $repo = $this->getDoctrine()->getRepository(Trick::class);
+
+        $tricks = $repo->findAll();
+
+        return $this->render('blog/home.html.twig', [
+            'controller_name' => 'BlogController',
+            'tricks' => $tricks
+        ]);
     }
 
 
@@ -110,6 +117,7 @@ class BlogController extends AbstractController
         ]);
     }
 
+
     /**
      * @Route("/blog/{id}/delete", name="blog_delete")
      */
@@ -129,6 +137,7 @@ class BlogController extends AbstractController
         
         return $this->redirectToRoute('blog');
     }
+
 
     /**
      * @Route("/blog/{id}", name="blog_show")

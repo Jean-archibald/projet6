@@ -2,6 +2,9 @@
 
 
 {% block body %}
+<div class="titleAllPages">
+    <h1>Trick Details</h1>    
+</div>
     <div class="divUniqueTrick">
 
         <article class="articleTrick">
@@ -10,6 +13,13 @@
                 <div class="textFeaturedPhoto">
                     <h2>{{ trick.title }}</h2>
                 </div>
+                {% if trick.author is same as (username) %}
+                <div class="buttonModifyAndDelete">
+                    <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                    <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-trash"></i></a>
+                </div>
+                {% endif %}
+                
             </div>
             <div class="contentTrick">
                 {{ trick.content | raw }}
@@ -52,7 +62,7 @@
         </div>
 
         <section id="comments">
-            <h2>{{ trick.comments | length }} Commentaires : </h2>
+            <h2>{{ trick.comments | length }} Comment(s) : </h2>
             {% for comment in trick.comments %}
                 <div class="comment">
                     <div class="row commentUnique">
