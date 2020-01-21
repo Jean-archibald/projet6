@@ -13,8 +13,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(
- * fields = {"email"},
- * message = "This email is already used."
+ * fields = {"email"},{"username"},
+ * message = "It already exists, please try anoter one."
  * )
  */
 class User implements UserInterface,Serializable
@@ -52,6 +52,22 @@ class User implements UserInterface,Serializable
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user", orphanRemoval=true)
      */
     private $comments;
+
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $apiToken;
+
+      /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $resetToken;
+
+     /**
+     * @ORM\Column(type="integer", length=1)
+     */
+    private $confirmed;
+
 
     public function __construct()
     {
@@ -113,7 +129,7 @@ class User implements UserInterface,Serializable
 
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        return ['ROLE_ADMIN'];
     }
 
     /**
@@ -195,4 +211,41 @@ class User implements UserInterface,Serializable
 
         return $this;
     }
+
+    public function getApitoken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function SetApitoken(string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function SetResetToken(string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    public function getConfirmed(): ?int
+    {
+        return $this->confirmed;
+    }
+
+    public function SetConfirmed(int $confirmed): self
+    {
+        $this->confirmed = $confirmed;
+
+        return $this;
+    }
+
 }

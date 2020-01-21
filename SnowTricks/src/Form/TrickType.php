@@ -22,8 +22,7 @@ class TrickType extends AbstractType
                 'choices' => $this->getChoices()
             ]) 
             ->add('featuredPhoto', FileType::class,[
-                'mapped' => false,
-                'label' => 'Choose a featured photo'
+                'mapped' => false
             ])
         ;
         

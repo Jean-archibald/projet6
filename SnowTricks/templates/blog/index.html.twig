@@ -17,10 +17,12 @@
                 <div class="trickTitle">
                     <a href="{{ path('blog_show', {'id' : trick.id }) }}"><p>{{ trick.title }}</p></a>
                 </div>
+                 {% if trick.author is same as (username) %}
                 <div class="buttonModifyAndDelete trickListButton">
                     <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                     <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-trash"></i></a>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

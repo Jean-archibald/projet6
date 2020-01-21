@@ -1,20 +1,42 @@
-{% extends "base.html.twig" %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
 
 {% block body %}
- <div class="titleAllPages">
-    <h1>Login</h1>    
-</div>
-<div class="loginFormDiv">
-    <form action="{{ path('security_login') }}" method="post">
-    <div class="form-group">
-        <input placeholder="email ..." required name="_username" type="text" class="form-control">
+<form method="post">
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+    <div class="titleAllPages">
+        <h1>Login</h1>    
     </div>
-    <div class="form-group">
-        <input placeholder="password ..." required name="_password" type="password" class="form-control">
-    </div>
-        <div class="form-group">
-        <button type="submit" class="btn btn-success">Login</button>
+
+     {% if error %}
+        <div class="alert alert-danger errorMessage">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+
+    <div class="loginFormDiv">
+        <label for="inputUsername">Username</label>
+        <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" value="{{ last_username }}" required autofocus>
+        <label for="inputPassword">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" required>
+
+        <input type="hidden" name="_csrf_token"
+            value="{{ csrf_token('authenticate') }}"
+        >
+
+
+        <button class="btn btn-lg btn-primary loginButton" type="submit">
+            Sign in
+        </button>
     </div>
 </form>
+<div class="loginButton">
+    <a href="{{ path('app_forgotten_password') }}"><button class="btn btn-lg btn-info">Forget Password ?</button></a>
 </div>
 {% endblock %}

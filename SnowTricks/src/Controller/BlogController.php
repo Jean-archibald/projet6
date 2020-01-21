@@ -27,9 +27,12 @@ class BlogController extends AbstractController
 
         $tricks = $repo->findAll();
 
+        $username = $this->getUserNameWhenConnected();
+
         return $this->render('blog/index.html.twig', [
             'controller_name' => 'BlogController',
-            'tricks' => $tricks
+            'tricks' => $tricks,
+            'username' => $username
         ]);
     }
 
@@ -42,89 +45,21 @@ class BlogController extends AbstractController
 
         $tricks = $repo->findAll();
 
+        $username = $this->getUserNameWhenConnected();
+
         return $this->render('blog/home.html.twig', [
             'controller_name' => 'BlogController',
-            'tricks' => $tricks
+            'tricks' => $tricks,
+            'username' => $username
         ]);
     }
 
-
-     /**
-     * @Route("/blog/new", name="blog_create")
-     * @Route("/blog/{id}/edit", name="blog_edit")
+      /**
+     * @Route("/admin/{id}/delete", name="blog_delete")
      */
-    public function trick(Trick $trick = null, Photo $photo = null, Request $request, EntityManagerInterface $manager)
-    {
-        if(!$trick)
-        {
-            $trick = new Trick();
-        }
-
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-
-        $formTrick = $this->createForm(TrickType::class, $trick);
-        $formTrick->handleRequest($request);
-        if($formTrick->isSubmitted() && $formTrick->isValid()) {
-            
-            
-            $file = $request->files->get('trick')['featuredPhoto'];
-            
-            $uploads_directory = $this->getParameter('uploads_directory');
-
-            $filename = md5(uniqid()) . '.' . $file->guessExtension();
-
-            $file->move(
-                $uploads_directory,
-                $filename
-            );
-            if(!$trick->getId())
-            {
-                $trick->setCreatedAt(new \DateTime());
-            }
-            else 
-            {
-                $trick->setModifiedAt(new \DateTime());
-            }
-            $trick->setUser($user)
-                  ->setTrash(false)
-                  ->setFeaturedPhoto($filename);
-
-            $manager->persist($trick);
-            $manager->flush();
-
-
-            return $this->redirectToRoute('blog_show', ['id' => $trick->getId()]);
-        }
-
-        if(!$photo)
-        {
-            $photo = new Photo();
-        }
-        
-        $formPhoto = $this->createForm(PhotoType::class, $photo);
-        $formPhoto->handleRequest($request);
-
-
-      
-
-
-
-
-        return $this->render('blog/create.html.twig', [
-            'formTrick' => $formTrick->createView(),
-            'editMode' => $trick->getId() !== null,
-            'trick' => $trick
-        ]);
-    }
-
-
-    /**
-     * @Route("/blog/{id}/delete", name="blog_delete")
-     */
-    public function delete($id, Request $request, EntityManagerInterface $manager)
+    public function delete(Trick $trick, EntityManagerInterface $manager)
     {
 
-        $trick = $manager->getRepository(Trick::class)->find($id);
         $trickFeaturedPhoto = $trick->getFeaturedPhoto();
         if(!$trick)
         {
@@ -135,27 +70,93 @@ class BlogController extends AbstractController
         $manager->flush();
 
         
-        return $this->redirectToRoute('blog');
+        return $this->redirectToRoute('home');
     }
 
 
+     /**
+     * @Route("/admin/new", name="blog_create")
+     * @Route("/admin/{id}/edit", name="blog_edit")
+     */
+    public function trick(Trick $trick = null, Request $request, EntityManagerInterface $manager)
+    {
+        if(!$trick)
+        {
+            $trick = new Trick();
+            $photoFeatured = "";
+        }
+        else
+        {
+            $photoFeatured = $trick->getFeaturedPhoto();
+        }
+      
+
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+
+        $formTrick = $this->createForm(TrickType::class, $trick);
+        $formTrick->handleRequest($request);
+        if($formTrick->isSubmitted() && $formTrick->isValid()) {
+            $file = $request->files->get('trick')['featuredPhoto'];
+            if (isset($file))
+            {
+            $uploads_directory = $this->getParameter('uploads_directory');
+
+            $filename = md5(uniqid()) . '.' . $file->guessExtension();
+
+            $file->move(
+                $uploads_directory,
+                $filename
+            );
+            }
+
+            if($trick->getId() && !isset($file))
+            {
+                $trick->setCreatedAt(new \DateTime())
+                      ->setFeaturedPhoto($photoFeatured)
+                      ->setUser($user)
+                      ->setTrash(false);
+            }
+            elseif($trick->getId() && isset($file))
+            {
+                unlink('uploads/'. $photoFeatured);
+                $trick->setModifiedAt(new \DateTime())
+                      ->setFeaturedPhoto($filename)
+                      ->setUser($user)
+                      ->setTrash(false);
+            }
+            else
+            $trick->setCreatedAt(new \DateTime())
+                  ->setUser($user)
+                  ->setTrash(false)
+                  ->setFeaturedPhoto($filename);
+
+            $manager->persist($trick);
+            $manager->flush();
+
+
+            return $this->redirectToRoute('blog_show', ['id' => $trick->getId()]);
+        }
+
+      
+      
+
+        return $this->render('blog/create.html.twig', [
+            'formTrick' => $formTrick->createView(),
+            'editMode' => $trick->getId() !== null,
+            'trick' => $trick,
+            'photoFeatured' => $photoFeatured
+        ]);
+    }
+
+
+  
     /**
      * @Route("/blog/{id}", name="blog_show")
      */
     public function show(Trick $trick, Request $request, EntityManagerInterface $manager)
     {   
-        $token = $this->get('security.token_storage')->getToken();
-        $user = $token->getUser();
-    
-     
-        if ($user != "anon.")
-        {
-            $username = $user->getUsername();
-        }
-        else
-        {
-            $username = "";
-        }
+        $username = $this->getUserNameWhenConnected();
+        $user = $this->getUserWhenConnected();
 
         $comment = new Comment();
         $formComment = $this->createForm(CommentType::class, $comment);
@@ -178,5 +179,28 @@ class BlogController extends AbstractController
             'commentForm' => $formComment->createView(),
             'username' => $username
         ]);
+    }
+
+    public function getUserWhenConnected()
+    {
+        $token = $this->get('security.token_storage')->getToken();
+        $user = $token->getUser();
+        return $user;
+    }
+
+    public function getUserNameWhenConnected()
+    {
+        $user = $this->getUserWhenConnected();
+    
+        if ($user != "anon.")
+        {
+            $username = $user->getUsername();
+        }
+        else
+        {
+            $username = "";
+        }
+
+        return $username;
     }
 }

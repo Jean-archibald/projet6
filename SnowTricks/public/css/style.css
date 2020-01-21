@@ -42,6 +42,12 @@ h1
     width: 70%;
 }
 
+.loadMoreButton
+{
+    text-align: center;
+    margin-bottom: 100px;
+}
+
 /* Trick Unique Page*/
 .divUniqueTrick
 {
@@ -199,4 +205,43 @@ h1
     margin-top:50px;
     text-align: center;
     
+}
+
+/*create page / edit page*/
+.createFormDiv
+{
+    width:70%;
+    margin:0 auto;
+    margin-top:50px;
+}
+
+.photoSizeEditMode
+{
+    width:199px;
+    height:199px;
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+.buttonDelete
+{
+    text-align: center;
+    margin-top:10px;
+}
+
+.buttonConfirm
+{
+    text-align: center;
+}
+
+.errorMessage
+{
+    text-align: center;
+    border: 2px solid red;
+}
+
+.loginButton
+{
+    margin-top:20px;
+    text-align: center;
 }
