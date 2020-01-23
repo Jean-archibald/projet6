@@ -19,6 +19,24 @@ class PhotoRepository extends ServiceEntityRepository
         parent::__construct($registry, Photo::class);
     }
 
+    /**
+     * @return Photo[]
+     */
+    public function selectFeaturedPhoto(\DateTimeInterface $createdAt): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT p
+            FROM App\Entity\Photo p
+            WHERE p.createdAt <= :createdAt
+            ORDER BY p.createdAt ASC'
+        )->setParameter('createdAt', $createdAt);
+
+        // returns an array of Product objects
+        return $query->getResult();
+    }
+
     // /**
     //  * @return Photo[] Returns an array of Photo objects
     //  */

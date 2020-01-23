@@ -11,7 +11,15 @@
         {% for trick in tricks %}
         <div class="articleDiv">   
             <div class="divPhoto">
-                <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }}" class="photoSize">
+                {% if trick.featuredPhoto is same as (null) %}
+                    {% if not trick.photos | length is same as (0) %}
+                        <img src="{{ asset('' ) ~ trick.photos[0].pathUrl }} " class="photoSize">
+                    {% else %}
+                        <img src="{{ asset('uploads/homeImage.jpg' ) }} " class="photoSize">
+                    {% endif %}
+                {% else %}
+                    <img src="{{ asset('' ) ~ trick.featuredPhoto }} " class="photoSize">
+                {% endif %}
             </div>
             <div class="infoTrick">
                 <div class="trickTitle">

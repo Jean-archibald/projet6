@@ -78,15 +78,16 @@ class Trick
      */
     private $user;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $featuredPhoto;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $modifiedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $featuredPhoto;
 
 
     public function __construct()
@@ -286,18 +287,6 @@ class Trick
         return $author;
     }
 
-    public function getFeaturedPhoto(): ?string
-    {
-        return $this->featuredPhoto;
-    }
-
-    public function setFeaturedPhoto(string $featuredPhoto): self
-    {
-        $this->featuredPhoto = $featuredPhoto;
-
-        return $this;
-    }
-
     public function getModifiedAt(): ?\DateTimeInterface
     {
         return $this->modifiedAt;
@@ -306,6 +295,18 @@ class Trick
     public function setModifiedAt(?\DateTimeInterface $modifiedAt): self
     {
         $this->modifiedAt = $modifiedAt;
+
+        return $this;
+    }
+
+    public function getFeaturedPhoto(): ?string
+    {
+        return $this->featuredPhoto;
+    }
+
+    public function setFeaturedPhoto(?string $featuredPhoto): self
+    {
+        $this->featuredPhoto = $featuredPhoto;
 
         return $this;
     }

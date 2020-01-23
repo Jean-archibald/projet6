@@ -129,7 +129,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_forgotten_password');
             }
   
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('app_login');
         }
  
         return $this->render('security/forgot.html.twig');
@@ -139,28 +139,36 @@ class SecurityController extends AbstractController
      * @Route("/changedPassword/{ResetToken}", name="app_reset_password")
      */
     public function changedPassword(String $ResetToken, Request $request, EntityManagerInterface $manager,UserPasswordEncoderInterface $encoder)
-    {
+    { 
         $repo = $this->getDoctrine()->getRepository(User::class);
+
         $user = $repo->findOneBy(['resetToken' => $ResetToken]);
-
-        if ($request->isMethod('POST'))
+    
+        if(isset($user))
         {
+            if ($request->isMethod('POST'))
+            {
+                if (isset($user))
+                {
+                
+                    $hash = $encoder->encodePassword($user, $request->request->get('password'));
+                    $user->setPassword($hash);
+                    $manager->persist($user);
+                    $manager->flush();
+                    return $this->redirectToRoute('app_login');
+                }
+                else
+                {
+                    return $this->redirectToRoute('home');
+                }
+            }
 
-            if (isset($user))
-            {
-               
-                $hash = $encoder->encodePassword($user, $request->request->get('password'));
-                $user->setPassword($hash);
-                $manager->persist($user);
-                $manager->flush();
-                return $this->redirectToRoute('home');
-            }
-            else
-            {
-                return $this->redirectToRoute('home');
-            }
+            return $this->render('security/reset.html.twig');
         }
-        return $this->render('security/reset.html.twig');
+        else
+        {
+            return $this->redirectToRoute('home');
+        }
       
     }
 

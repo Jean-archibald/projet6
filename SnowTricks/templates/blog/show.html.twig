@@ -6,20 +6,44 @@
     <h1>Trick Details</h1>    
 </div>
     <div class="divUniqueTrick">
-
-        <article class="articleTrick">
-            <div class="titleDivUniqueTrick">
-                <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }} " class="featuredPhoto">
-                <div class="textFeaturedPhoto">
-                    <h2>{{ trick.title }}</h2>
-                </div>
-                {% if trick.author is same as (username) %}
-                <div class="buttonModifyAndDelete">
-                    <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                    <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-trash"></i></a>
-                </div>
+        <div class="titleDivUniqueTrick">
+            {% if trick.featuredPhoto is same as (null) %}
+                {% if not trick.photos | length is same as (0) %}
+                    <img src="{{ asset('' ) ~ trick.photos[0].pathUrl }} " class="featuredPhoto">
+                {% else %}
+                    <img src="{{ asset('uploads/homeImage.jpg' ) }} " class="featuredPhoto">
                 {% endif %}
-                
+            {% else %}
+                <img src="{{ asset('' ) ~ trick.featuredPhoto }} " class="featuredPhoto">
+            {% endif %}
+
+            <div class="textFeaturedPhoto">
+                <h2>{{ trick.title }}</h2>
+            </div>
+
+            {% if trick.author is same as (username) %}
+            <div class="buttonModifyAndDelete">
+                <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                <a href="{{ path('blog_edit', {'id' : trick.id }) }}" class="btn btn-primary"><i class="fas fa-trash"></i></a>
+            </div>
+            {% endif %}
+        </div>
+        <article class="articleTrick">
+            <div class="photoListDiv">
+                {% for photo in trick.photos %}
+                <div class="divPhotoEdit">
+                    <div class="divPhoto">
+                        <img src="{{ asset('' ) ~ photo.pathUrl }} " alt="snowboard" class="photoSize"/>
+                    </div>
+                </div>
+                {% endfor %}
+                {% for video in trick.videos %}
+                <div class="divPhotoEdit">
+                    <div class="divPhoto">
+                        <iframe  class="photoSize" src="https://www.youtube.com/embed/{{ video.pathUrl }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
             <div class="contentTrick">
                 {{ trick.content | raw }}
@@ -62,8 +86,8 @@
         </div>
 
         <section id="comments">
-            <h2>{{ trick.comments | length }} Comment(s) : </h2>
-            {% for comment in trick.comments %}
+            <h2>{{ trick.comments | length }} Comment(s) in total: </h2>
+            {% for comment in comments %}
                 <div class="comment">
                     <div class="row commentUnique">
                         <div class="col-3">
@@ -77,11 +101,9 @@
                         </div>
                     </div>
             {% endfor %}
-            <button class="btn btn-info">Load More Comments </button>
+            <form method="post" action="{{ path('blog_show', {'id' : trick.id }) }}"><input type="hidden" name="limit" value="{{ limit + 5 }}"/><button value="loadMore" type="submit" name="loadMore" class="btn btn-info">Load More Comments</button></form>
+
         </section>
-
-
-
 
     </div>
 

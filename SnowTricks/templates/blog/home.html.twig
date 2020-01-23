@@ -1,16 +1,27 @@
 {% extends 'base.html.twig' %} 
 {% block body %}
-<container class="containerHome">
+<container class="containerHome" id="top">
     <img src="{{ asset('uploads/homeImage.jpg' ) }} " alt="snowboard" class="mainPhoto"/>
     <div class="textPhoto">
         <h1>Welcome to SnowTricks</h1>
     </div>
+    <div class="upButton">
+        <a href="#down" class="arrowButton"/><i class="fas fa-arrow-down"></i></a>
+    </div>
 </container>
-<div class="articleListDiv">
+<div class="articleListDiv" id="down">
         {% for trick in tricks %}
         <div class="articleDiv">   
             <div class="divPhoto">
-                <img src="{{ asset('uploads/' ) ~ trick.featuredPhoto }}" class="photoSize">
+                {% if trick.featuredPhoto is same as (null) %}
+                    {% if not trick.photos | length is same as (0) %}
+                        <img src="{{ asset('' ) ~ trick.photos[0].pathUrl }} " class="photoSize">
+                    {% else %}
+                        <img src="{{ asset('uploads/homeImage.jpg' ) }} " class="photoSize">
+                    {% endif %}
+                {% else %}
+                    <img src="{{ asset('' ) ~ trick.featuredPhoto }} " class="photoSize">
+                {% endif %}
             </div>
             <div class="infoTrick">
                 <div class="trickTitle">
@@ -25,9 +36,16 @@
             </div>
         </div>
         {% endfor %}
-        
 </div>
+
 <div class="loadMoreButton">
-    <button class="btn btn-info">Load More Tricks</button>
+    <form method="post" action="{{ path('home')}}"><input type="hidden" name="limit" value="{{ limit + 5 }}"/><button value="loadMore" type="submit" name="loadMore" class="btn btn-info">Load More Tricks</button></form>
 </div>
+<div class="upButton">
+    {% if tricks | length > 10  %}
+    <a href="#top" class="arrowButton"/><i class="fas fa-arrow-up"></i></a>
+    {% endif %}
+</div>
+
+
 {% endblock %}

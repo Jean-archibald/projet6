@@ -18,6 +18,28 @@ h1
 
 /* Home Page*/
 
+.upButton
+{
+    font-size:40px;
+    text-align: right;
+    position: relative;
+    top:-50px;
+    margin-right:20px;
+    color:black;
+}
+
+.arrowButton
+{
+    color:black;
+    position: relative;
+    top:-50px;
+}
+
+.buttonsHome
+{
+    display: flex;
+}
+
 .mainPhoto
 {
     width: 100%;
@@ -49,6 +71,18 @@ h1
 }
 
 /* Trick Unique Page*/
+.photoListDiv
+{
+    margin: 50px 50px 50px 50px;
+    height:auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: space-between;
+    flex-wrap:wrap;
+
+}
+
 .divUniqueTrick
 {
 
@@ -97,10 +131,29 @@ h1
     border: 2px solid black;
 }
 
+.titleDivUniqueTrick .buttonModifyFeaturedPhoto
+{
+    background: whitesmoke;
+    z-index: 1;
+    position: absolute;
+    font-family: Georgia;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 5%;
+    width: 90px;
+    border: 2px solid black;
+    display: flex;
+    justify-content: space-around;
+}
+
 .featuredPhoto
 {
-    margin-top:20px;
-    width:65%;
+    min-height: 600px;
+    max-height: 700px;
+    width:100%;
+    margin-right:0px;
+    margin-left:0px;
 }
 
 .contentTrick
@@ -148,6 +201,20 @@ h1
     padding: 5px;
     margin:5px;
     border: 2px solid black;
+}
+
+.divPhotoEdit
+{
+    display:flex;
+    flex-direction: column;
+
+}
+
+.formModifyFile
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 /* Trick List */
@@ -231,7 +298,8 @@ h1
 
 .buttonConfirm
 {
-    text-align: center;
+    padding-right:20px;
+    padding-bottom: 10px;
 }
 
 .errorMessage
@@ -244,4 +312,10 @@ h1
 {
     margin-top:20px;
     text-align: center;
+}
+
+.divButtonEditAndDelete
+{
+   display: flex;
+   justify-content: flex-end;
 }
