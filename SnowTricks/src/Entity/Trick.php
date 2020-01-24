@@ -52,10 +52,7 @@ class Trick
      */
     private $type;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $trash;
+  
 
     /**
      * @ORM\Column(type="datetime")
@@ -149,17 +146,6 @@ class Trick
         return $this;
     }
 
-    public function getTrash(): ?bool
-    {
-        return $this->trash;
-    }
-
-    public function setTrash(bool $trash): self
-    {
-        $this->trash = $trash;
-
-        return $this;
-    }
 
     public function getCreatedAt(): ?\DateTimeInterface
     {

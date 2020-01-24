@@ -23,8 +23,8 @@ class UserRepository extends ServiceEntityRepository
     {  
         $hash = $encoder->encodePassword($user, $user->getPassword());
         $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/','-_'), '=');
-        $user->setApitoken( $token);
-        $user->SetConfirmed(1);
+        $user->setApitoken($token);
+        $user->SetConfirmed(0);
         $user->setPassword($hash);
     
         $avatarUpload = $form->get('avatar')->getData();
@@ -33,19 +33,19 @@ class UserRepository extends ServiceEntityRepository
             $avatar = md5(uniqid()) . '.' . $avatarUpload->guessExtension();   
             $avatarUpload->move(
                 $uploads_directory,
-                $avatar
-        );
-        $user->setAvatar('uploads/'.$avatar);
+                $avatar);
         }
+        else
+        {   
+            $avatar = 'avatar.jpg';
+        }
+        $user->setAvatar('uploads/'.$avatar);
         $manager->persist($user);
         $manager->flush();
     }
 
-    public function sendMailConfirmation($user,$manager,$notification,$mailer)
+    public function sendMailConfirmation($user,$notification,$mailer)
     {
-        $user->SetConfirmed(0);
-        $manager->persist($user);
-        $manager->flush();
         $notification->notify($user,$mailer);
     }
 
@@ -64,6 +64,5 @@ class UserRepository extends ServiceEntityRepository
         $manager->flush();
         $notification->forgotNotify($user,$mailer);
     }
-
-    
+ 
 }

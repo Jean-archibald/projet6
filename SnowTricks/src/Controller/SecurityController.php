@@ -19,46 +19,28 @@ class SecurityController extends AbstractController
 {
     /**
      * @Route("/inscription",name="app_registration")
-     * @Route("/admin/{id}/account",name="account")
      */
-    public function registration(User $user = null,UserRepository $userRepository,MailerInterface $mailer,Request $request, EntityManagerInterface $manager, UserPasswordEncoderInterface $encoder, ContactNotification $notification)
+    public function registration(UserRepository $userRepository,MailerInterface $mailer,Request $request, EntityManagerInterface $manager, UserPasswordEncoderInterface $encoder, ContactNotification $notification)
     {
-        if(!$user)
-        {
-            $user = new User();
-        }
        
+        $user = new User();
 
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
+
         $uploads_directory = $this->getParameter('uploads_directory');
 
-        if($form->isSubmitted() && $form->isValid() && !$user)
+        //create a new User and send a confirmation mail
+        if($form->isSubmitted() && $form->isValid())
         { 
             $userRepository->register($form,$user,$manager,$encoder,$uploads_directory);
-            $userRepository->sendMailConfirmation($user,$manager,$notification,$mailer);
-            return $this->redirectToRoute('home');
-        }
-        elseif($form->isSubmitted() && $form->isValid())
-        {
-            $userRepository->register($form,$user,$manager,$encoder,$uploads_directory);
+            $userRepository->sendMailConfirmation($user,$notification,$mailer);
             return $this->redirectToRoute('home');
         }
 
-        if($user->getUsername() == null)
-        {
-            return $this->render('security/registration.html.twig', [
-            'form' => $form->createView()
+        return $this->render('security/registration.html.twig', [
+        'form' => $form->createView()
         ]);
-        }
-        else
-        {
-            return $this->render('security/editAccount.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user
-        ]);
-        }
-        
     }
 
     /**
@@ -116,7 +98,8 @@ class SecurityController extends AbstractController
             $user = $repo->findOneBy(['username' => $username]);
  
             if (isset($user))
-            {
+            {   
+                //if User exist, the app send him a email with a unique token
                 $userRepository->forgottenMailSend($user,$manager,$notification,$mailer);
             }
             else

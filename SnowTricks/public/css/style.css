@@ -203,10 +203,7 @@ h1
     text-align: center;
 }
 
-.commentLoading
-{
-    display: flex;
-}
+
 
 .avatarBubble
 {
@@ -344,13 +341,32 @@ h1
 /*****************/
 /*MEDIA QUERIES*/
 /*****************/
-@media (min-width: 640px) {
+@media (min-width: 850px) {
     .mobile
     {
         display: none;
     }
 }
-@media (max-width: 640px) {
+@media (max-width: 850px) {
+    .containerHome .textPhoto 
+    {
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1;
+        position: absolute;
+        text-align: center;
+        font-family: Georgia;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        width: 70%;
+    }
+
+    .textMainPhotoHome
+    {
+        font-size:30px !important;
+    }
+
     .noAdaptedTomobile
     {
         display: none;
@@ -364,6 +380,7 @@ h1
         width:100%;
         font-size:2em;
         border:2px solid black;
+
     }
 
     footer

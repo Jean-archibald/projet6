@@ -49,6 +49,7 @@ class User implements UserInterface,Serializable
     private $tricks;
 
     /**
+     * @Assert\Length(max="255", maxMessage="Your comment must not be more than 255 characters")
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user", orphanRemoval=true)
      */
     private $comments;

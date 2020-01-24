@@ -89,15 +89,15 @@
         <section id="comments">
             <h2>{{ trick.comments | length }} Comment(s) in total: </h2>
             {% for comment in comments %}
-                <div class="commentLoading">
-                    <div class="col-3 avatarBubble">
-                        {% if comment.avatar is same as (null) %}
-                            <img src="{{ asset('uploads/avatar.jpg' ) }} " class="featuredPhoto">
-                        {% else %}
-                            <img src="{{ asset('' ) ~ comment.avatar }} " alt="snowboard" class="avatarSize"/>
-                        {% endif %}
-                    </div>
+                <div class="comment">
                     <div class="row commentUnique">
+                        <div class="col-3">
+                            {% if comment.avatar is same as (null) %}
+                                <img src="{{ asset('uploads/avatar.jpg' ) }} " class="avatarSize">
+                            {% else %}
+                                <img src="{{ asset('' ) ~ comment.avatar }} " alt="snowboard" class="avatarSize"/>
+                            {% endif %}
+                        </div>
                         <div class="col-3">
                             By {{ comment.author }}
                         </div>

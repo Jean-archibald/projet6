@@ -48,8 +48,10 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator implements Passw
         $credentials = [
             'username' => $request->request->get('username'),
             'password' => $request->request->get('password'),
+            'confirmed' => $request->request->get('confirmed'),
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
+
         $request->getSession()->set(
             Security::LAST_USERNAME,
             $credentials['username']
@@ -77,7 +79,12 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator implements Passw
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => $credentials['username']]);
+        $confirmed = $user->getConfirmed();
+        if( $this->passwordEncoder->isPasswordValid($user, $credentials['password']) && $confirmed == 1)
+        {
+            return true;
+        };
     }
 
     /**
@@ -86,6 +93,11 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator implements Passw
     public function getPassword($credentials): ?string
     {
         return $credentials['password'];
+    }
+
+    public function getConfirmed($credentials): ?int
+    {
+        return $credentials['confirmed'];
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
