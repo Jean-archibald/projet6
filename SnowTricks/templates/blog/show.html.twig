@@ -110,7 +110,7 @@
                     </div>
                 </div>
             {% endfor %}
-            <form method="post" action="{{ path('blog_show', {'id' : trick.id }) }}"><input type="hidden" name="limit" value="{{ limit + 5 }}"/><button value="loadMore" type="submit" name="loadMore" class="btn btn-info">Load More Comments</button></form>
+            <form method="post" action="{{ path('blog_show', {'slug' : trick.slug }) }}"><input type="hidden" name="limit" value="{{ limit + 5 }}"/><button value="loadMore" type="submit" name="loadMore" class="btn btn-info">Load More Comments</button></form>
 
         </section>
 

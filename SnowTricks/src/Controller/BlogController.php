@@ -20,6 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 
@@ -28,6 +29,7 @@ class BlogController extends AbstractController
     /**
      * @Route("/blog", name="blog")
      */
+
     public function index(TrickRepository $trickRepository)
     {
         //query for all tricks and load them all in the template
@@ -77,10 +79,11 @@ class BlogController extends AbstractController
     }
 
      /**
-     * @Route("/blog/{id}", name="blog_show")
+     * @Route("/blog/{slug}", name="blog_show",)
      */
     public function show(Trick $trick, Request $request, EntityManagerInterface $manager, TrickRepository $trickRepository, CommentRepository $commentRepository)
     {    
+      
         //LoadMore for comments 
         $loadMore = $request->get('loadMore');
         $limitPost = (int)$request->get('limit');
@@ -113,7 +116,7 @@ class BlogController extends AbstractController
 
             //if comment is submit and valid, its save in database and publish right away
             $commentRepository->editComment($comment,$trick,$user,$manager);
-            return $this->redirectToRoute('blog_show', ['id' => $trick->getId()]);
+            return $this->redirectToRoute('blog_show', ['slug' => $trick->getSlug()]);
         }
 
         return $this->render('blog/show.html.twig', [
@@ -140,8 +143,10 @@ class BlogController extends AbstractController
         $formTrick->handleRequest($request);
 
         if($formTrick->isSubmitted() && $formTrick->isValid()) 
-        {   
-            $trickRepository->editTrick($trick,$manager,$user);
+        { 
+            $title = $trick->getTitle();  
+            $slug = preg_replace('~[^\pL\d]+~u', '', $title);
+            $trickRepository->editTrick($trick,$manager,$user,$slug);
 
             $uploads_directory = $this->getParameter('uploads_directory');
             //get array of photos
@@ -174,7 +179,7 @@ class BlogController extends AbstractController
                 $trickRepository->addVideoToCollection($trick,$manager,$video);
             }
 
-            return $this->redirectToRoute('blog_show', ['id' => $trick->getId()]);
+            return $this->redirectToRoute('blog_show', ['slug' => $trick->getSlug()]);
         }
 
         return $this->render('blog/create.html.twig', [

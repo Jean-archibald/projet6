@@ -25,7 +25,7 @@
             </div>
             <div class="infoTrick">
                 <div class="trickTitle">
-                    <a href="{{ path('blog_show', {'id' : trick.id }) }}"><p>{{ trick.title }}</p></a>
+                    <a href="{{ path('blog_show', {'slug' : trick.slug }) }}"><p>{{ trick.title }}</p></a>
                 </div>
                  {% if trick.author is same as (username) %}
                 <div class="buttonModifyAndDelete trickListButton">

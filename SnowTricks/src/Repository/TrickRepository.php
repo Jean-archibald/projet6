@@ -31,14 +31,14 @@ class TrickRepository extends ServiceEntityRepository
     }
 
 
-    public function editTrick($trick,$manager,$user)
+    public function editTrick($trick,$manager,$user,$slug)
     {
         $trick->setCreatedAt(new \DateTime())
             ->setUser($user)
-            ->setTrash(false)
+            ->setSlug($slug)
             ;
-            $manager->persist($trick);
-            $manager->flush();
+        $manager->persist($trick);
+        $manager->flush();
     }
 
     public function setFeaturedPhoto($trick,$manager,$photo)
@@ -83,6 +83,8 @@ class TrickRepository extends ServiceEntityRepository
         $manager->remove($trick);
         $manager->flush();
     }
+
+
 
 
 
