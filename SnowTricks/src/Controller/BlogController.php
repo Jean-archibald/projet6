@@ -216,6 +216,9 @@ class BlogController extends AbstractController
         $formVideoEdit->handleRequest($request);
 
         if($formEdit->isSubmitted() && $formEdit->isValid()) {
+            $title = $trick->getTitle();  
+            $slug = preg_replace('~[^\pL\d]+~u', '', $title);
+            $trick->setSlug($slug);
             $trick->setModifiedAt(new \DateTime());
             $manager->persist($trick);
             $manager->flush();
@@ -254,7 +257,7 @@ class BlogController extends AbstractController
 
         if($formPhotoEdit->isSubmitted() && $formPhotoEdit->isValid()) 
         {
-
+            
             $trickRepository->modifyTrick($trick,$manager);
 
             $uploads_directory = $this->getParameter('uploads_directory');
