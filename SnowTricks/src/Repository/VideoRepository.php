@@ -19,6 +19,21 @@ class VideoRepository extends ServiceEntityRepository
         parent::__construct($registry, Video::class);
     }
 
+    public function editVideo($video,$videoPathUrl,$trick)
+    {
+        $video->setCreatedAt(new \DateTime())
+              ->setPathUrl($videoPathUrl["v"])
+              ->setTrick($trick);
+            ;
+    }
+
+    public function deleteVideo($video,$videoToDelete,$manager)
+    {
+        $video = $this->findOneBy(['pathUrl' => $videoToDelete]);
+        $manager->remove($video);
+        $manager->flush();
+    }
+
     // /**
     //  * @return Video[] Returns an array of Video objects
     //  */

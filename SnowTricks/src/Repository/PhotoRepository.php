@@ -37,6 +37,24 @@ class PhotoRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function uploadAndAddPhoto($photo,$filename,$trick,$manager)
+    {
+        $photo->setCreatedAt(new \DateTime())
+                          ->setPathUrl('uploads/'.$filename)
+                          ->setTrick($trick);
+                      ;
+                    $manager->persist($photo);
+                    $manager->flush();
+    }
+
+    public function deletePhoto($image,$manager)
+    {
+        $photo = $this->findOneBy(['pathUrl' => $image]);
+        unlink($image);
+        $manager->remove($photo);
+        $manager->flush();
+    }
+
     // /**
     //  * @return Photo[] Returns an array of Photo objects
     //  */

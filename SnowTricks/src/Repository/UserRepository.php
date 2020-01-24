@@ -19,43 +19,51 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-  
-
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
-
-     /*
-    public function findOneBySomeField($value): ?User
-    */
+    public function register($form,$user,$manager,$encoder,$uploads_directory)
+    {  
+        $hash = $encoder->encodePassword($user, $user->getPassword());
+        $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/','-_'), '=');
+        $user->setApitoken( $token);
+        $user->SetConfirmed(1);
+        $user->setPassword($hash);
     
-    public function findOneByApiToken($apitoken) 
-    {
-
+        $avatarUpload = $form->get('avatar')->getData();
+        if($avatarUpload != null)
+        {
+            $avatar = md5(uniqid()) . '.' . $avatarUpload->guessExtension();   
+            $avatarUpload->move(
+                $uploads_directory,
+                $avatar
+        );
+        $user->setAvatar('uploads/'.$avatar);
+        }
+        $manager->persist($user);
+        $manager->flush();
     }
+
+    public function sendMailConfirmation($user,$manager,$notification,$mailer)
+    {
+        $user->SetConfirmed(0);
+        $manager->persist($user);
+        $manager->flush();
+        $notification->notify($user,$mailer);
+    }
+
+    public function confirmedMailUser($user,$manager)
+    {
+        $user->SetConfirmed(1);
+        $manager->persist($user);
+        $manager->flush();
+    }
+
+    public function forgottenMailSend($user,$manager,$notification,$mailer)
+    {
+        $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/','-_'), '=');
+        $user->setResetToken($token);
+        $manager->persist($user);
+        $manager->flush();
+        $notification->forgotNotify($user,$mailer);
+    }
+
+    
 }

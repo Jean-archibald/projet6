@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationType;
-use App\Form\ForgotType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Notification\ContactNotification;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,38 +19,46 @@ class SecurityController extends AbstractController
 {
     /**
      * @Route("/inscription",name="app_registration")
+     * @Route("/admin/{id}/account",name="account")
      */
-    public function registration(MailerInterface $mailer,Request $request, EntityManagerInterface $manager, UserPasswordEncoderInterface $encoder, ContactNotification $notification) {
-        $user = new User();
+    public function registration(User $user = null,UserRepository $userRepository,MailerInterface $mailer,Request $request, EntityManagerInterface $manager, UserPasswordEncoderInterface $encoder, ContactNotification $notification)
+    {
+        if(!$user)
+        {
+            $user = new User();
+        }
+       
 
         $form = $this->createForm(RegistrationType::class, $user);
-
         $form->handleRequest($request);
+        $uploads_directory = $this->getParameter('uploads_directory');
 
-        if($form->isSubmitted() && $form->isValid())
-            {   
-                $this->addFlash('success','We just send you an email registration confirmation');
+        if($form->isSubmitted() && $form->isValid() && !$user)
+        { 
+            $userRepository->register($form,$user,$manager,$encoder,$uploads_directory);
+            $userRepository->sendMailConfirmation($user,$manager,$notification,$mailer);
+            return $this->redirectToRoute('home');
+        }
+        elseif($form->isSubmitted() && $form->isValid())
+        {
+            $userRepository->register($form,$user,$manager,$encoder,$uploads_directory);
+            return $this->redirectToRoute('home');
+        }
 
-                $hash = $encoder->encodePassword($user, $user->getPassword());
-                $user->setApitoken($this->generateToken());
-                $user->SetConfirmed(0);
-                $user->setPassword($hash);
-
-                $manager->persist($user);
-                $manager->flush();
-                $notification->notify($user,$mailer);
-
-                return $this->redirectToRoute('home');
-            }
-
-        return $this->render('security/registration.html.twig', [
+        if($user->getUsername() == null)
+        {
+            return $this->render('security/registration.html.twig', [
             'form' => $form->createView()
         ]);
-    }
-
-    public function generateToken()
-    {
-        return rtrim(strtr(base64_encode(random_bytes(32)), '+/','-_'), '=');
+        }
+        else
+        {
+            return $this->render('security/editAccount.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
+        }
+        
     }
 
     /**
@@ -75,24 +83,19 @@ class SecurityController extends AbstractController
      */
     public function logout()
     {
- 
-        
+
     }
 
     /**
      * @Route("/confirmed/{Apitoken}", name="app_confirmed_mail")
      */
-    public function confirmedMail(string $Apitoken, EntityManagerInterface $manager)
+    public function confirmedMail(UserRepository $userRepository, string $Apitoken, EntityManagerInterface $manager)
     {
-  
         $repo = $this->getDoctrine()->getRepository(User::class);
         $user = $repo->findOneBy(['apiToken' => $Apitoken]);
-
         if (isset($user))
         {
-            $user->SetConfirmed(1);
-            $manager->persist($user);
-            $manager->flush();
+            $userRepository->confirmedMailUser($user,$manager);
             return $this->redirectToRoute('app_login');
         }
         else
@@ -105,33 +108,25 @@ class SecurityController extends AbstractController
       /**
      * @Route("/passwordForgotten", name="app_forgotten_password")
      */
-    public function forgottenPassword(Request $request,MailerInterface $mailer, EntityManagerInterface $manager,ContactNotification $notification): Response
+    public function forgottenPassword(UserRepository $userRepository, Request $request,MailerInterface $mailer, EntityManagerInterface $manager,ContactNotification $notification): Response
     {
         if ($request->isMethod('POST')) {
-    
             $username = $request->request->get('username');
-
             $repo = $this->getDoctrine()->getRepository(User::class);
- 
             $user = $repo->findOneBy(['username' => $username]);
  
             if (isset($user))
             {
-                $token = $this->generateToken();
-                $user->setResetToken($token);
-                $manager->persist($user);
-                $manager->flush();
-                $notification->forgotNotify($user,$mailer);
-                $this->addFlash('success', 'We just send you a reset mail');
+                $userRepository->forgottenMailSend($user,$manager,$notification,$mailer);
             }
-            else{
-                $this->addFlash('danger', 'Username does not exist!');
+            else
+            {
                 return $this->redirectToRoute('app_forgotten_password');
             }
   
             return $this->redirectToRoute('app_login');
         }
- 
+
         return $this->render('security/forgot.html.twig');
     }
 
@@ -150,7 +145,6 @@ class SecurityController extends AbstractController
             {
                 if (isset($user))
                 {
-                
                     $hash = $encoder->encodePassword($user, $request->request->get('password'));
                     $user->setPassword($hash);
                     $manager->persist($user);
@@ -162,14 +156,20 @@ class SecurityController extends AbstractController
                     return $this->redirectToRoute('home');
                 }
             }
-
             return $this->render('security/reset.html.twig');
         }
         else
         {
             return $this->redirectToRoute('home');
         }
-      
     }
 
+
+      /**
+     * @Route("/registerOrLogin", name="app_choiceRegister")
+     */
+    public function choice()
+    {
+        return $this->render('security/choose.html.twig');
+    }
 }

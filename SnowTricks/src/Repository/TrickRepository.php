@@ -30,6 +30,62 @@ class TrickRepository extends ServiceEntityRepository
         ;
     }
 
+
+    public function editTrick($trick,$manager,$user)
+    {
+        $trick->setCreatedAt(new \DateTime())
+            ->setUser($user)
+            ->setTrash(false)
+            ;
+            $manager->persist($trick);
+            $manager->flush();
+    }
+
+    public function setFeaturedPhoto($trick,$manager,$photo)
+    {
+        $trick->setFeaturedPhoto($photo);
+        $manager->persist($trick);
+        $manager->flush();
+    }
+
+    public function addVideoToCollection($trick,$manager,$video)
+    {
+        $trick->addVideo($video);
+        $manager->persist($trick);
+        $manager->persist($video);
+        $manager->flush();
+    }
+
+    public function setDefaultImageFeatured($trick,$manager)
+    {
+        $trick->setFeaturedPhoto('uploads/homeImage.jpg');
+        $manager->persist($trick);
+        $manager->flush();
+    }
+
+    public function modifyTrick($trick,$manager)
+    {
+        $trick->setModifiedAt(new \DateTime());
+        $manager->persist($trick);
+        $manager->flush();
+    }
+
+    public function deleteTrick($trick,$manager)
+    {
+        $photos = $trick->getPhotos();
+        $photoCollection = $photos->toArray();
+
+        foreach ($photoCollection as $photo)
+        {
+            unlink($photo->getPathUrl());
+        }
+  
+        $manager->remove($trick);
+        $manager->flush();
+    }
+
+
+
     // /**
     //  * @return Trick[] Returns an array of Trick objects
     //  */

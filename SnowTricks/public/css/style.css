@@ -83,6 +83,13 @@ h1
 
 }
 
+.avatarSize
+{
+    width:75px;
+    height:75px;
+    padding-top:10px;
+}
+
 .divUniqueTrick
 {
 
@@ -196,6 +203,17 @@ h1
     text-align: center;
 }
 
+.commentLoading
+{
+    display: flex;
+}
+
+.avatarBubble
+{
+    border-radius: 50%;
+    border:1px solid black;
+}
+
 .commentUnique
 {
     padding: 5px;
@@ -231,7 +249,7 @@ h1
 }
 .articleDiv
 {
-    width:200px;
+    width:203px;
     height:250px;
     border: 2px solid black;
     margin-bottom: 15px;
@@ -241,7 +259,7 @@ h1
 
 .divPhoto
 {
-    width:200px;
+    width:220px;
     height:200px;
 }
 
@@ -281,7 +299,10 @@ h1
     margin:0 auto;
     margin-top:50px;
 }
-
+.hiddenDiv
+{
+    display: none;
+}
 .photoSizeEditMode
 {
     width:199px;
@@ -318,4 +339,116 @@ h1
 {
    display: flex;
    justify-content: flex-end;
+}
+
+/*****************/
+/*MEDIA QUERIES*/
+/*****************/
+@media (min-width: 640px) {
+    .mobile
+    {
+        display: none;
+    }
+}
+@media (max-width: 640px) {
+    .noAdaptedTomobile
+    {
+        display: none;
+    }
+
+    .navMobile
+    {
+        display:flex;
+        flex-direction: row;
+        justify-content: space-around;
+        width:100%;
+        font-size:2em;
+        border:2px solid black;
+    }
+
+    footer
+    {
+        margin-bottom:200px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        /* Set the fixed height of the footer here */
+        height: 60px;
+    }
+
+    .choiceMobile
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border:2px solid black;
+        padding-top:25px;
+        padding-bottom: 25px;
+    }
+
+    .buttonLogMobile
+    {
+        margin-bottom:10px;
+    }
+
+    /*home*/
+    .articleListDiv
+    {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+    }
+
+    .articleDiv
+    {
+        width:90%;
+    }
+
+    .divPhoto
+    {
+        width: 100%;
+    }
+
+    .photoSize
+    {
+        width:100%;
+    }
+
+    /*Unique Trick*/
+    .divUniqueTrick
+    {
+        width:90%;
+        margin:0 auto;
+    }
+    .titleDivUniqueTrick
+    {
+        width:100%;
+    }
+
+    .divButtonSeeMedia
+    {
+        text-align:center;
+        margin-top:50px;
+    }
+
+    .buttonSeeMedia
+    {
+        font-size:25px;
+    }
+
+    .avatarSize
+    {
+        width:55px;
+        height:55px;
+    }
+
+    .avatarBubble
+    {
+        margin:0 auto;
+    }
+    
+    .divPhotoEdit
+    {
+        margin-top:10px;
+    }
 }

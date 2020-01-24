@@ -102,4 +102,11 @@ class Comment
         return $author;
     }
 
+    public function getAvatar()
+    {
+        $avatar = $this->getUser()->getAvatar();
+
+        return $avatar;
+    }
+
 }

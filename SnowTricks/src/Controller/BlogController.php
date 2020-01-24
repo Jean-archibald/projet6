@@ -10,10 +10,11 @@ use App\Form\EditType;
 use App\Entity\Comment;
 use App\Form\TrickType;
 use App\Form\VideoType;
-use App\Form\UploadType;
+use App\Form\PhotoType;
 use App\Form\CommentType;
-use App\Form\UploadPhotoType;
+use App\Repository\PhotoRepository;
 use App\Repository\TrickRepository;
+use App\Repository\VideoRepository;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,11 +28,10 @@ class BlogController extends AbstractController
     /**
      * @Route("/blog", name="blog")
      */
-    public function index()
+    public function index(TrickRepository $trickRepository)
     {
-        $repo = $this->getDoctrine()->getRepository(Trick::class);
-
-        $tricks = $repo->findAll();
+    
+        $tricks = $trickRepository->findAll();
 
         $username = $this->getUserNameWhenConnected();
 
@@ -77,7 +77,7 @@ class BlogController extends AbstractController
      /**
      * @Route("/blog/{id}", name="blog_show")
      */
-    public function show(Trick $trick, Request $request, EntityManagerInterface $manager, CommentRepository $commentRepository)
+    public function show(Trick $trick, Request $request, EntityManagerInterface $manager, TrickRepository $trickRepository, CommentRepository $commentRepository)
     {    
         $loadMore = $request->get('loadMore');
         $limitPost = (int)$request->get('limit');
@@ -104,13 +104,8 @@ class BlogController extends AbstractController
         $formComment->handleRequest($request);
 
         if($formComment->isSubmitted() && $formComment->isValid()) {
-            $comment->setCreatedAt(new \DateTime())
-                    ->setTrick($trick)
-                    ->setUser($user);
 
-            $manager->persist($comment);
-            $manager->flush();
-
+            $commentRepository->editComment($comment,$trick,$user,$manager);
             return $this->redirectToRoute('blog_show', ['id' => $trick->getId()]);
         }
 
@@ -119,14 +114,15 @@ class BlogController extends AbstractController
             'commentForm' => $formComment->createView(),
             'username' => $username,
             'comments' => $comments,
-            'limit' => (int)$limit
+            'limit' => (int)$limit,
+          
         ]);
     }
 
      /**
      * @Route("/admin/new", name="blog_create")
      */
-    public function create(Request $request, EntityManagerInterface $manager)
+    public function create(TrickRepository $trickRepository,PhotoRepository $photoRepository,VideoRepository $videoRepository, Request $request, EntityManagerInterface $manager)
     {
         
         $user = $this->get('security.token_storage')->getToken()->getUser();
@@ -137,13 +133,8 @@ class BlogController extends AbstractController
         $formTrick->handleRequest($request);
 
         if($formTrick->isSubmitted() && $formTrick->isValid()) 
-        {
-            $trick->setCreatedAt(new \DateTime())
-            ->setUser($user)
-            ->setTrash(false)
-            ;
-            $manager->persist($trick);
-            $manager->flush();
+        {   
+            $trickRepository->editTrick($trick,$manager,$user);
 
             $uploads_directory = $this->getParameter('uploads_directory');
             //get array of photos
@@ -153,40 +144,26 @@ class BlogController extends AbstractController
             foreach($photoFiles as $photoFile)
             {
                 $filename = md5(uniqid()) . '.' . $photoFile->guessExtension();
-
                 $photoFile->move(
                     $uploads_directory,
                     $filename
                 );
-                
-                    $photo = new Photo();
-                    $photo->setCreatedAt(new \DateTime())
-                          ->setPathUrl('uploads/'.$filename)
-                          ->setTrick($trick);
-                      ;
-                    $manager->persist($photo);
-                    $manager->flush();
-
+                $photo = new Photo();
+                $photoRepository->uploadAndAddPhoto($photo,$filename,$trick,$manager);
                 if($trick->getFeaturedPhoto() === null)
                 {
-                    $trick->setFeaturedPhoto($photo->getPathUrl());
-                    $manager->persist($trick);
-                    $manager->flush();
+                    $trickRepository->setFeaturedPhoto($trick,$manager,$photo);
                 }
             }
 
             $videoFullUrl = $formTrick->get('videos')->getData();
-            parse_str( parse_url( $videoFullUrl, PHP_URL_QUERY ), $videoPathUrl );
-            var_dump($videoPathUrl);
-            $video = new Video();
-                    $video->setCreatedAt(new \DateTime())
-                          ->setPathUrl($videoPathUrl["v"])
-                          ->setTrick($trick);
-                      ;
-                    $trick->addVideo($video);
-                    $manager->persist($trick);
-                    $manager->persist($video);
-                    $manager->flush();
+            if (!empty($videoFullUrl))
+            {
+                parse_str( parse_url( $videoFullUrl, PHP_URL_QUERY ), $videoPathUrl );
+                $video = new Video();
+                $videoRepository->editVideo($video,$videoPathUrl,$trick);
+                $trickRepository->addVideoToCollection($trick,$manager,$video);
+            }
 
             return $this->redirectToRoute('blog_show', ['id' => $trick->getId()]);
         }
@@ -201,7 +178,7 @@ class BlogController extends AbstractController
      /**
      * @Route("/admin/{id}/edit", name="blog_edit")
      */
-    public function edit(Video $video = null, Trick $trick, Request $request, EntityManagerInterface $manager)
+    public function edit(TrickRepository $trickRepository, VideoRepository $videoRepository, PhotoRepository $photoRepository, Video $video = null, Trick $trick, Request $request, EntityManagerInterface $manager)
     {   
         $username = $this->getUserNameWhenConnected();
 
@@ -213,10 +190,10 @@ class BlogController extends AbstractController
         $imageToUnFeatured = $request->get('editFeatured');
         $imageFeaturedToDelete = $request->get('deleteFeatured');
 
-        $formEdit = $this->createForm(EditType::class, $trick);
+        $formEdit = $this->createForm(TrickType::class, $trick);
         $formEdit->handleRequest($request);
 
-        $formPhotoEdit = $this->createForm(UploadType::class, $trick);
+        $formPhotoEdit = $this->createForm(PhotoType::class, $trick);
         $formPhotoEdit->handleRequest($request);
 
         $formVideoEdit = $this->createForm(VideoType::class, $video);
@@ -230,60 +207,34 @@ class BlogController extends AbstractController
 
         if (isset($videoToDelete))
         {
-            $repo = $this->getDoctrine()->getRepository(Video::class);
-            $video = $repo->findOneBy(['pathUrl' => $videoToDelete]);
-            $manager->remove($video);
-            $manager->flush();
+            $videoRepository->deleteVideo($video,$videoToDelete,$manager);
         }
 
         if (isset($imageFeaturedToDelete))
         {
-            $repo = $this->getDoctrine()->getRepository(Photo::class);
- 
-            $photo = $repo->findOneBy(['pathUrl' => $imageFeaturedToDelete]);
-            unlink($imageFeaturedToDelete);
-            $manager->remove($photo);
-            $manager->flush();
-            $trick->setFeaturedPhoto('uploads/homeImage.jpg');
-            $manager->persist($trick);
-            $manager->flush();
+            $photoRepository->deletePhoto($imageFeaturedToDelete,$manager);
+            $trickRepository->setDefaultImageFeatured($trick,$manager);
         }
 
         if (isset($imageToUnFeatured))
         {
-            $repo = $this->getDoctrine()->getRepository(Trick::class);
- 
-            $trick = $repo->findOneBy(['featuredPhoto' => $imageToUnFeatured]);
-            $trick->setFeaturedPhoto('uploads/homeImage.jpg');
-            $manager->persist($trick);
-            $manager->flush();
+            $trickRepository->setDefaultImageFeatured($trick,$manager);
         }
 
         if (isset($imageToDelete))
         {
-            $repo = $this->getDoctrine()->getRepository(Photo::class);
- 
-            $photo = $repo->findOneBy(['pathUrl' => $imageToDelete]);
-            unlink($imageToDelete);
-            $manager->remove($photo);
-            $manager->flush();
+            $photoRepository->deletePhoto($imageToDelete,$manager);
         }
 
         if (isset($imageToFeatured))
         {
-            $trick->setFeaturedPhoto($imageToFeatured);
-            $manager->persist($trick);
-            $manager->flush();
+            $trickRepository->setFeaturedPhoto($trick,$manager,$imageToFeatured);
         }
 
         if($formPhotoEdit->isSubmitted() && $formPhotoEdit->isValid()) 
         {
 
-            $trick->setModifiedAt(new \DateTime())
-            ;
-            $manager->persist($trick);
-            $manager->flush();
-
+            $trickRepository->modifyTrick($trick,$manager);
 
             $uploads_directory = $this->getParameter('uploads_directory');
             //get array of photos
@@ -293,26 +244,16 @@ class BlogController extends AbstractController
             foreach($photoFiles as $photoFile)
             {
                 $filename = md5(uniqid()) . '.' . $photoFile->guessExtension();
-
                 $photoFile->move(
                     $uploads_directory,
                     $filename
                 );
-                
-                    $photo = new Photo();
-                    $photo->setCreatedAt(new \DateTime())
-                            ->setPathUrl('uploads/'.$filename)
-                            ->setTrick($trick);
-                        ;
-                    $manager->persist($photo);
-                    $manager->flush();
-
-                    if($trick->getFeaturedPhoto() === null)
-                    {
-                        $trick->setFeaturedPhoto($photo->getPathUrl());
-                        $manager->persist($trick);
-                        $manager->flush();
-                    }
+                $photo = new Photo();
+                $photoRepository->uploadAndAddPhoto($photo,$filename,$trick,$manager);
+                if($trick->getFeaturedPhoto() === null)
+                {
+                    $trickRepository->setFeaturedPhoto($trick,$manager,$photo);
+                }
             }
         }
 
@@ -320,18 +261,9 @@ class BlogController extends AbstractController
         {
             $videoFullUrl = $formVideoEdit->get('pathUrl')->getData();
             parse_str( parse_url( $videoFullUrl, PHP_URL_QUERY ), $videoPathUrl );
-            var_dump($videoPathUrl);
             $video = new Video();
-                    $video->setCreatedAt(new \DateTime())
-                          ->setPathUrl($videoPathUrl["v"])
-                          ->setTrick($trick);
-                      ;
-                    $trick->addVideo($video);
-                    $trick->setModifiedAt(new \DateTime());
-                    $manager->persist($trick);
-                    $manager->persist($video);
-                    $manager->flush();
-            
+            $videoRepository->editVideo($video,$videoPathUrl,$trick);
+            $trickRepository->addVideoToCollection($trick,$manager,$video);
         }
         
         return $this->render('blog/edit.html.twig', [
@@ -346,23 +278,9 @@ class BlogController extends AbstractController
       /**
      * @Route("/admin/{id}/delete", name="app_delete")
      */
-    public function delete(Trick $trick, EntityManagerInterface $manager)
+    public function delete(TrickRepository $trickRepository,Trick $trick, EntityManagerInterface $manager)
     {
-
-        if(!$trick)
-        {
-            throw $this->createNotFoundException("The trick doesnt exist");
-        }
-        $photos = $trick->getPhotos();
-        $photoCollection = $photos->toArray();
-
-        foreach ($photoCollection as $photo)
-        {
-            unlink($photo->getPathUrl());
-        }
-  
-        $manager->remove($trick);
-        $manager->flush();
+        $trickRepository->deleteTrick($trick,$manager);
         return $this->redirectToRoute('home');
     }
 

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %} 
+{% block body %}
+<div class="titleAllPages">
+        <h1>Login/Register</h1>    
+    </div>
+<div class="choiceMobile">
+    <div>
+        <a href="{{ path('app_login') }}"><button class="btn btn-success buttonLogMobile">Log In</button></a>
+    </div>
+    <div>
+        <a href="{{ path('app_registration') }}"><button class="btn btn-info">Register</button></a>
+    </div>
+</div>
+{% endblock %}

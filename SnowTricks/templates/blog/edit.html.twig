@@ -3,11 +3,12 @@
 
 {% block body %}
 {% if trick.author is same as (username) %}
-    <div class="titleAllPages">
+    <div class="titleAllPages noAdaptedTomobile">
         <h1>Edit your trick</h1>    
     </div>
     <div class="divUniqueTrick">
         <div class="titleDivUniqueTrick">
+
         {% if trick.featuredPhoto is same as (null) %}
             {% if not trick.photos | length is same as (0) %}
                 <img src="{{ asset('' ) ~ trick.photos[0].pathUrl }} " class="featuredPhoto">
@@ -21,6 +22,7 @@
             <div class="textFeaturedPhoto">
                 <h2>{{ trick.title }}</h2>
             </div>
+
             {% if not trick.featuredPhoto is same as (null) %}
                 {% if not trick.featuredPhoto is same as ('uploads/homeImage.jpg') %}
                     <div class="buttonModifyFeaturedPhoto">
@@ -30,6 +32,7 @@
                 {% endif %}
             {% endif %}
         </div>
+
         <article class="articleTrick">
             <div class="photoListDiv">
                 {% for photo in trick.photos %}
@@ -84,7 +87,7 @@
                     <div class="buttonConfirm">
                     <button type="submit" class="btn btn-success">Add Youtube Video</button>
                     </div>
-                {{ form_end(formPhotoEdit) }}
+                {{ form_end(formVideoEdit) }}
             </div>
 
             <div>
@@ -93,19 +96,28 @@
 
             <div class="contentTrick">
                 {{ form_start(formEdit) }}
+
+                {{ form_row(formEdit.title, {
+                'attr': {'placeholder' : 'Trick title'}
+                }) }}
+
                     {{ form_row(formEdit.content, {
-                        'attr': {'placeholder' : 'Trick content'}
-                    }) }}
+                    'attr': {'placeholder' : 'Trick content'}
+                }) }}
 
                 {{ form_row(formEdit.type, {
                     'attr': {'placeholder' : 'Trick type'}
                 }) }}
+                <div class="hiddenDiv">
+                    {{ form_widget(formEdit.photos, { 'disabled' : 'disabled','attr': {'class': 'hidden-row'} }) }}
+                    {{ form_widget(formEdit.videos, { 'disabled' : 'disabled' ,'attr': {'class': 'hidden-row'} }) }}
+                </div>
                     <div class="divButtonEditAndDelete">
                         <div class="buttonConfirm">
                             <button type="submit" class="btn btn-success">Modify Trick</button>
                         </div>
-                        {{ form_end(formEdit) }}
                     </div>
+                {{ form_end(formEdit) }}
                     <div class="divButtonEditAndDelete">
                         <div class="buttonConfirm"> 
                             <a href="{{ path('app_delete', {'id' : trick.id }) }}">

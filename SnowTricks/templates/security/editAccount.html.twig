@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modify your account{% endblock %}
+
+{% block body %}
+<div class="titleAllPages">
+    <h1>Edit your Account</h1>    
+</div>
+
+<div class="loginFormDiv">
+ {{ form_start(form) }}
+    <div>
+        
+        <div>
+            {{ form_row(form.username, { 'label' : 'Change your username','attr' : {'placeholder' : 'Change your username'}}) }}
+        </div>
+    <div>
+    <div>
+        <div>
+            <img src="{{ asset('' ) ~ user.avatar }} " alt="snowboard" class="avatarSize"/>
+        </div>
+        <div>
+            {{ form_row(form.avatar, { 'label' : 'Change your avatar','attr' : {'placeholder' : 'Change your avatar'}}) }}
+        </div>
+    </div>
+    <div>
+       
+        <div>
+            {{ form_row(form.email, { 'label' : 'Change your email','attr' : {'placeholder' : 'Change your email'}}) }}
+        </div>
+    </div>
+    <div>
+       
+        <div>
+            {{ form_row(form.password, { 'label' : 'Change your password','attr' : {'placeholder' : 'Change your password'}}) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success registrationButton">Modify your account</button>
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

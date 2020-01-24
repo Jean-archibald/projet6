@@ -2,10 +2,10 @@
 
 
 {% block body %}
-<div class="titleAllPages">
+<div class="titleAllPages noAdaptedTomobile">
     <h1>Trick Details</h1>    
 </div>
-    <div class="divUniqueTrick">
+    <div class="divUniqueTrick ">
         <div class="titleDivUniqueTrick">
             {% if trick.featuredPhoto is same as (null) %}
                 {% if not trick.photos | length is same as (0) %}
@@ -85,10 +85,18 @@
             <hr class="separator">
         </div>
 
+
         <section id="comments">
             <h2>{{ trick.comments | length }} Comment(s) in total: </h2>
             {% for comment in comments %}
-                <div class="comment">
+                <div class="commentLoading">
+                    <div class="col-3 avatarBubble">
+                        {% if comment.avatar is same as (null) %}
+                            <img src="{{ asset('uploads/avatar.jpg' ) }} " class="featuredPhoto">
+                        {% else %}
+                            <img src="{{ asset('' ) ~ comment.avatar }} " alt="snowboard" class="avatarSize"/>
+                        {% endif %}
+                    </div>
                     <div class="row commentUnique">
                         <div class="col-3">
                             By {{ comment.author }}
@@ -100,6 +108,7 @@
                             {{comment.content | raw}}
                         </div>
                     </div>
+                </div>
             {% endfor %}
             <form method="post" action="{{ path('blog_show', {'id' : trick.id }) }}"><input type="hidden" name="limit" value="{{ limit + 5 }}"/><button value="loadMore" type="submit" name="loadMore" class="btn btn-info">Load More Comments</button></form>
 

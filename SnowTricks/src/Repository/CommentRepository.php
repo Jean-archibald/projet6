@@ -32,6 +32,17 @@ class CommentRepository extends ServiceEntityRepository
         ;
     }
 
+    public function editComment($comment,$trick,$user,$manager)
+    {
+        $comment->setCreatedAt(new \DateTime())
+                    ->setTrick($trick)
+                    ->setUser($user);
+
+            $manager->persist($comment);
+            $manager->flush();
+    }
+
+
     // /**
     //  * @return Comment[] Returns an array of Comment objects
     //  */
