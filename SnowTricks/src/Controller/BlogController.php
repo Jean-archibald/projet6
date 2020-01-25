@@ -22,8 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-
-
 class BlogController extends AbstractController
 {
     /**
@@ -53,15 +51,13 @@ class BlogController extends AbstractController
         $loadMore = $request->get('loadMore');
         $limitPost = (int)$request->get('limit');
 
-        if(isset($loadMore))
-        {   
+        if(isset($loadMore)) {   
             //if LoadMore is valid, the limitpost increase of 5  eachtime it s click on
             $offset = 0;
             $limit = $limitPost;
             $tricks = $trickRepository->findSomeTrickOrderedByNewest($offset,$limit);
         }
-        else
-        {   
+        else {   
             //if LoadMore is not valid, just 5 tricks are loaded
             $offset = 0;
             $limit = 5;
@@ -88,15 +84,13 @@ class BlogController extends AbstractController
         $loadMore = $request->get('loadMore');
         $limitPost = (int)$request->get('limit');
 
-        if(isset($loadMore))
-        {
+        if(isset($loadMore)) {
             //each time button LoadMore is click on, 5 more comments appear
             $offset = 0;
             $limit = $limitPost;
             $comments = $commentRepository->findSomeCommentOrderedByNewest($trick,$offset,$limit);
         }
-        else
-        {
+        else {
             //The page come with 5 comments at beggining
             $offset = 0;
             $limit = 5;
@@ -114,6 +108,9 @@ class BlogController extends AbstractController
 
         if($formComment->isSubmitted() && $formComment->isValid()) {
 
+            $content = $comment->getContent();
+            $content = htmlspecialchars($content);
+            $comment->setContent($content);
             //if comment is submit and valid, its save in database and publish right away
             $commentRepository->editComment($comment,$trick,$user,$manager);
             return $this->redirectToRoute('blog_show', ['slug' => $trick->getSlug()]);
@@ -142,9 +139,12 @@ class BlogController extends AbstractController
         $formTrick = $this->createForm(TrickType::class, $trick);
         $formTrick->handleRequest($request);
 
-        if($formTrick->isSubmitted() && $formTrick->isValid()) 
-        { 
-            $title = $trick->getTitle();  
+        if($formTrick->isSubmitted() && $formTrick->isValid()) { 
+            $title = $trick->getTitle(); 
+            $title = htmlspecialchars($title); 
+            $content = $trick->getContent();
+            $content = htmlspecialchars($content);
+
             $slug = preg_replace('~[^\pL\d]+~u', '', $title);
             $trickRepository->editTrick($trick,$manager,$user,$slug);
 
@@ -153,8 +153,7 @@ class BlogController extends AbstractController
             $photoFiles = $request->files->get('trick')['photos'];
             //loop throught the photoFiles
             
-            foreach($photoFiles as $photoFile)
-            {
+            foreach($photoFiles as $photoFile) {
                 //create a unique name for the photo
                 $filename = md5(uniqid()) . '.' . $photoFile->guessExtension();
                 $photoFile->move(
@@ -163,16 +162,14 @@ class BlogController extends AbstractController
                 );
                 $photo = new Photo();
                 $photoRepository->uploadAndAddPhoto($photo,$filename,$trick,$manager);
-                if($trick->getFeaturedPhoto() === null)
-                {
+                if($trick->getFeaturedPhoto() === null) {
                     $trickRepository->setFeaturedPhoto($trick,$manager,$photo);
                 }
             }
 
             //get the video Url and formate it to be able to read it with the youtube embed media 
             $videoFullUrl = $formTrick->get('videos')->getData();
-            if (!empty($videoFullUrl))
-            {
+            if (!empty($videoFullUrl)) {
                 parse_str( parse_url( $videoFullUrl, PHP_URL_QUERY ), $videoPathUrl );
                 $video = new Video();
                 $videoRepository->editVideo($video,$videoPathUrl,$trick);
@@ -216,7 +213,10 @@ class BlogController extends AbstractController
         $formVideoEdit->handleRequest($request);
 
         if($formEdit->isSubmitted() && $formEdit->isValid()) {
-            $title = $trick->getTitle();  
+            $title = $trick->getTitle(); 
+            $title = htmlspecialchars($title); 
+            $content = $trick->getContent();
+            $content = htmlspecialchars($content);  
             $slug = preg_replace('~[^\pL\d]+~u', '', $title);
             $trick->setSlug($slug);
             $trick->setModifiedAt(new \DateTime());
@@ -224,39 +224,33 @@ class BlogController extends AbstractController
             $manager->flush();
         }
 
-        if (isset($videoToDelete))
-        {
+        if (isset($videoToDelete)) {
             //delete the video
             $videoRepository->deleteVideo($video,$videoToDelete,$manager);
         }
 
-        if (isset($imageFeaturedToDelete))
-        {
+        if (isset($imageFeaturedToDelete)) {
             //delete the featured image of the trick and set a Default one
             $photoRepository->deletePhoto($imageFeaturedToDelete,$manager);
             $trickRepository->setDefaultImageFeatured($trick,$manager);
         }
 
-        if (isset($imageToUnFeatured))
-        {
+        if (isset($imageToUnFeatured)) {
             //set the featured image back to normal
             $trickRepository->setDefaultImageFeatured($trick,$manager);
         }
 
-        if (isset($imageToDelete))
-        {
+        if (isset($imageToDelete)) {
             //delete the photo
             $photoRepository->deletePhoto($imageToDelete,$manager);
         }
 
-        if (isset($imageToFeatured))
-        {
+        if (isset($imageToFeatured)) {
             //set the image to featured
             $trickRepository->setFeaturedPhoto($trick,$manager,$imageToFeatured);
         }
 
-        if($formPhotoEdit->isSubmitted() && $formPhotoEdit->isValid()) 
-        {
+        if($formPhotoEdit->isSubmitted() && $formPhotoEdit->isValid()) {
             
             $trickRepository->modifyTrick($trick,$manager);
 
@@ -265,8 +259,7 @@ class BlogController extends AbstractController
             $photoFiles = $formPhotoEdit->get('photos')->getData();
             //loop throught the photoFiles
 
-            foreach($photoFiles as $photoFile)
-            {
+            foreach($photoFiles as $photoFile) {
                 $filename = md5(uniqid()) . '.' . $photoFile->guessExtension();
                 $photoFile->move(
                     $uploads_directory,
@@ -281,8 +274,7 @@ class BlogController extends AbstractController
             }
         }
 
-        if($formVideoEdit->isSubmitted() && $formVideoEdit->isValid()) 
-        {
+        if($formVideoEdit->isSubmitted() && $formVideoEdit->isValid()) {
             $videoFullUrl = $formVideoEdit->get('pathUrl')->getData();
             parse_str( parse_url( $videoFullUrl, PHP_URL_QUERY ), $videoPathUrl );
             $video = new Video();
@@ -322,12 +314,10 @@ class BlogController extends AbstractController
     {
         $user = $this->getUserWhenConnected();
     
-        if ($user != "anon.")
-        {
+        if ($user != "anon.") {
             $username = $user->getUsername();
-        }
-        else
-        {
+        } 
+        else {
             $username = "";
         }
 

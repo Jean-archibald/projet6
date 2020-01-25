@@ -31,8 +31,9 @@ class SecurityController extends AbstractController
         $uploads_directory = $this->getParameter('uploads_directory');
 
         //create a new User and send a confirmation mail
-        if($form->isSubmitted() && $form->isValid())
-        { 
+        if($form->isSubmitted() && $form->isValid()) { 
+            $username = $user->getUsername(); 
+            $username = htmlspecialchars($username); 
             $userRepository->register($form,$user,$manager,$encoder,$uploads_directory);
             $userRepository->sendMailConfirmation($user,$notification,$mailer);
             return $this->redirectToRoute('home');
@@ -75,13 +76,11 @@ class SecurityController extends AbstractController
     {
         $repo = $this->getDoctrine()->getRepository(User::class);
         $user = $repo->findOneBy(['apiToken' => $Apitoken]);
-        if (isset($user))
-        {
+        if (isset($user)) {
             $userRepository->confirmedMailUser($user,$manager);
             return $this->redirectToRoute('app_login');
         }
-        else
-        {
+        else {
             return $this->redirectToRoute('home');
         }
     }   
@@ -97,13 +96,11 @@ class SecurityController extends AbstractController
             $repo = $this->getDoctrine()->getRepository(User::class);
             $user = $repo->findOneBy(['username' => $username]);
  
-            if (isset($user))
-            {   
+            if (isset($user)) {   
                 //if User exist, the app send him a email with a unique token
                 $userRepository->forgottenMailSend($user,$manager,$notification,$mailer);
             }
-            else
-            {
+            else {
                 return $this->redirectToRoute('app_forgotten_password');
             }
   
@@ -122,27 +119,22 @@ class SecurityController extends AbstractController
 
         $user = $repo->findOneBy(['resetToken' => $ResetToken]);
     
-        if(isset($user))
-        {
-            if ($request->isMethod('POST'))
-            {
-                if (isset($user))
-                {
+        if(isset($user)) {
+            if ($request->isMethod('POST')) {
+                if (isset($user)) {
                     $hash = $encoder->encodePassword($user, $request->request->get('password'));
                     $user->setPassword($hash);
                     $manager->persist($user);
                     $manager->flush();
                     return $this->redirectToRoute('app_login');
                 }
-                else
-                {
+                else {
                     return $this->redirectToRoute('home');
                 }
             }
             return $this->render('security/reset.html.twig');
         }
-        else
-        {
+        else {
             return $this->redirectToRoute('home');
         }
     }
