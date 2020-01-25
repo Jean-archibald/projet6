@@ -41,9 +41,9 @@ class TrickRepository extends ServiceEntityRepository
         $manager->flush();
     }
 
-    public function setFeaturedPhoto($trick,$manager,$photo)
+    public function setNewFeaturedPhoto($trick,$manager,$imageToFeatured)
     {
-        $trick->setFeaturedPhoto($photo);
+        $trick->setFeaturedPhoto($imageToFeatured);
         $manager->persist($trick);
         $manager->flush();
     }

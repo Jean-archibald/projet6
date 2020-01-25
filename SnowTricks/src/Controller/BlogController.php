@@ -163,7 +163,8 @@ class BlogController extends AbstractController
                 $photo = new Photo();
                 $photoRepository->uploadAndAddPhoto($photo,$filename,$trick,$manager);
                 if($trick->getFeaturedPhoto() === null) {
-                    $trickRepository->setFeaturedPhoto($trick,$manager,$photo);
+                    $filename = 'uploads/'.$filename;
+                    $trickRepository->setNewFeaturedPhoto($trick,$manager,$filename);
                 }
             }
 
@@ -247,7 +248,7 @@ class BlogController extends AbstractController
 
         if (isset($imageToFeatured)) {
             //set the image to featured
-            $trickRepository->setFeaturedPhoto($trick,$manager,$imageToFeatured);
+            $trickRepository->setNewFeaturedPhoto($trick,$manager,$imageToFeatured);
         }
 
         if($formPhotoEdit->isSubmitted() && $formPhotoEdit->isValid()) {
@@ -269,7 +270,7 @@ class BlogController extends AbstractController
                 $photoRepository->uploadAndAddPhoto($photo,$filename,$trick,$manager);
                 if($trick->getFeaturedPhoto() === null)
                 {
-                    $trickRepository->setFeaturedPhoto($trick,$manager,$photo);
+                    $trickRepository->setNewFeaturedPhoto($trick,$manager,$filename);
                 }
             }
         }
